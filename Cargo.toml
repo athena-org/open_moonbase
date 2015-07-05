@@ -1,0 +1,9 @@
+[package]
+name = "open_moonbase"
+version = "0.1.0"
+authors = ["Layl Conway"]
+license = "Apache-2.0"
+
+[dependencies]
+jamkit = "0.1"
+rand = "0.3.8"
