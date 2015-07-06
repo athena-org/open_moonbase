@@ -38,6 +38,16 @@ fn main() {
     }
 }
 
+trait Tuple2dToi32 {
+    fn to_i32(self) -> (i32, i32);
+}
+
+impl Tuple2dToi32 for (u32, u32) {
+    fn to_i32(self) -> (i32, i32) {
+        (self.0 as i32, self.1 as i32)
+    }
+}
+
 struct Map {
     tileset: jamkit::Texture,
     size: (u32, u32),
@@ -46,8 +56,8 @@ struct Map {
 
 impl Map {
     fn new(graphics: &jamkit::Graphics, tileset: &str) -> Map {
-        let width = 50; //256
-        let height = 50;
+        let width = 256;
+        let height = 256;
         let mut rng = rand::thread_rng();
 
         Map {
@@ -58,19 +68,30 @@ impl Map {
     }
 
     fn draw(&self, frame: &mut jamkit::Frame) {
+        let frame_dimensions: (i32, i32) = frame.get_dimensions().to_i32();
+        let mut data = Vec::<jamkit::DrawData>::new();
+
         for tile in 0..self.data.len() {
             let (x, y) = (
                 tile as i32 / self.size.0 as i32 * 64,
                 tile as i32 % self.size.1 as i32 * 64);
-
             let dest = [x, y, x + 64, y + 64];
+
+            // Make sure the destination is within the screen before we continue
+            if dest[2] < 0 || dest[3] < 0 ||
+               dest[0] > frame_dimensions.0 || dest[1] > frame_dimensions.1 {
+                continue;
+            }
+
             let src = if self.data[tile] == 0 {
                 [0, 0, 32, 32]
             } else {
                 [32, 0, 64, 32]
             };
 
-            frame.draw(&self.tileset, Some(src), dest);
+            data.push(jamkit::DrawData{source: Some(src), destination: dest});
         }
+
+        frame.draw_many(&self.tileset, &data);
     }
 }
