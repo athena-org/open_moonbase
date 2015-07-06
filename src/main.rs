@@ -40,22 +40,28 @@ fn main() {
 
 struct Map {
     tileset: jamkit::Texture,
+    size: (u32, u32),
     data: Vec<u32>
 }
 
 impl Map {
     fn new(graphics: &jamkit::Graphics, tileset: &str) -> Map {
+        let width = 50; //256
+        let height = 50;
         let mut rng = rand::thread_rng();
 
         Map {
             tileset: jamkit::Texture::load(&graphics, tileset),
-            data: [0u32; 256*256].iter().map(|_| rng.gen::<u32>() % 2).collect()
+            size: (width, height),
+            data: (0u32..width*height).map(|_| rng.gen::<u32>() % 2).collect()
         }
     }
 
     fn draw(&self, frame: &mut jamkit::Frame) {
         for tile in 0..self.data.len() {
-            let (x, y) = (tile as i32 / 256 * 64, tile as i32 % 256i32 * 64);
+            let (x, y) = (
+                tile as i32 / self.size.0 as i32 * 64,
+                tile as i32 % self.size.1 as i32 * 64);
 
             let dest = [x, y, x + 64, y + 64];
             let src = if self.data[tile] == 0 {
