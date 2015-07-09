@@ -15,15 +15,18 @@
 extern crate cgmath;
 extern crate jamkit;
 extern crate rand;
+extern crate time;
 
 use cgmath::{Vector2};
 use rand::{Rng};
+use time::{Duration, SteadyTime};
 
 fn main() {
     let mut graphics = jamkit::Graphics::init("Open Moonbase", 1280, 720);
 
     let map = Map::new(&graphics, "assets/tiles.png");
 
+    let mut timer = DeterminismTimer::at_interval(1000);
     'main: loop {
         for event in graphics.poll_events() {
             match event {
@@ -32,11 +35,42 @@ fn main() {
             }
         }
 
+        // Update everything
+        timer.update(&|delta| {
+            println!("Tick!");
+        });
+
+        // Render everything
         let mut frame = jamkit::Frame::start(&graphics);
-
         map.draw(&mut frame);
-
         frame.finish();
+    }
+}
+
+struct DeterminismTimer {
+    elapsed: Duration,
+    target: Duration,
+    last_tick: SteadyTime
+}
+
+impl DeterminismTimer {
+    fn at_interval(milliseconds: i64) -> Self {
+        DeterminismTimer {
+            elapsed: Duration::zero(),
+            target: Duration::milliseconds(milliseconds),
+            last_tick: SteadyTime::now()
+        }
+    }
+
+    fn update(&mut self, tick_closure: &Fn(Duration)) {
+        let new_tick = SteadyTime::now();
+        self.elapsed = self.elapsed + (new_tick - self.last_tick);
+        self.last_tick = new_tick;
+
+        while self.elapsed > self.target {
+            self.elapsed = self.elapsed - self.target;
+            tick_closure(self.target.clone());
+        }
     }
 }
 

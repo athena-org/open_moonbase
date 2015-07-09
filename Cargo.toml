@@ -6,5 +6,6 @@ license = "Apache-2.0"
 
 [dependencies]
 cgmath = "0.2"
-jamkit = "0.2.0"
+jamkit = "0.2.1"
 rand = "0.3.8"
+time = "0.1"
