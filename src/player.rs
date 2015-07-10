@@ -12,24 +12,43 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use cgmath::{Vector2};
+use cgmath::{Vector2, EuclideanVector};
 use jamkit;
+use jamkit::{Key};
+use jamkit::utils::{InputState};
+use num::traits::{Zero};
 
 pub struct Player {
-    position: Vector2<i32>,
+    position: Vector2<f32>,
     texture: jamkit::Texture
 }
 
 impl Player {
     pub fn new(graphics: &jamkit::Graphics, texture: &str) -> Player {
         Player {
-            position: Vector2::new(500, 500),
+            position: Vector2::new(500.0, 500.0),
             texture: jamkit::Texture::load(&graphics, texture)
         }
     }
 
+    pub fn update(&mut self, input: &InputState) {
+        let mut direction = Vector2::new(0.0, 0.0);
+        let speed = Vector2::new(2.0, 2.0);
+
+        if input.get(Key::A).is_pressed() { direction.x -= 1.0; }
+        if input.get(Key::D).is_pressed() { direction.x += 1.0; }
+        if input.get(Key::W).is_pressed() { direction.y -= 1.0; }
+        if input.get(Key::S).is_pressed() { direction.y += 1.0; }
+
+        if !direction.is_zero() {
+            direction.normalize_self();
+        }
+
+        self.position = self.position + (direction * speed);
+    }
+
     pub fn draw(&self, frame: &mut jamkit::Frame) {
-        let pos = self.position;
+        let pos = Vector2::new(self.position.x as i32, self.position.y as i32);
         frame.draw(&self.texture, None, [pos.x - 32, pos.y - 32, pos.x + 32, pos.y + 32]);
     }
 }
