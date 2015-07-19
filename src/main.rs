@@ -19,36 +19,35 @@ extern crate rand;
 
 mod map;
 mod player;
+mod world;
 
-use jamkit::utils::{InputState};
+use jamkit::utils::{InputState, DeterminismTimer};
 
 fn main() {
-    let mut graphics = jamkit::Graphics::init("Open Moonbase", 1280, 720);
+    let mut graphics = jamkit::Graphics::init("Open Moonbase", 1280, 800);
     let mut input = InputState::new();
 
-    let map = map::Map::new(&graphics, "assets/tiles.png");
-    let mut player = player::Player::new(&graphics, "assets/player.png");
+    let mut world = world::World::new(&graphics);
 
-    let mut timer = jamkit::utils::DeterminismTimer::at_interval(10);
+    let mut timer = DeterminismTimer::at_interval(10);
     'main: loop {
         for event in graphics.poll_events() {
             match event {
                 jamkit::Event::Closed => break 'main,
                 jamkit::Event::KeyboardInput(state, key) =>
                     input.process_keyboard(&state, &key),
-                _ => {}
+                _ => ()
             }
         }
 
         // Update everything
         timer.update(&mut |_| {
-            player.update(&input);
+            world.update(&input);
         });
 
         // Render everything
         let mut frame = jamkit::Frame::start(&graphics);
-        map.draw(&mut frame);
-        player.draw(&mut frame);
+        world.draw(&mut frame);
         frame.finish();
     }
 }
