@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use cgmath::{Vector2};
+use cgmath::Vector2;
 use jamkit;
 use rand;
 use rand::{Rng};

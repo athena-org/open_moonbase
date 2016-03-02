@@ -21,21 +21,22 @@ mod map;
 mod player;
 mod world;
 
-use jamkit::utils::{InputState, DeterminismTimer};
+use jamkit::Graphics;
+use jamkit::utils::{InputState, TickTimer};
 
 fn main() {
-    let mut graphics = jamkit::Graphics::init("Open Moonbase", 1280, 800);
+    let mut graphics = Graphics::init("Open Moonbase", 1280, 800);
     let mut input = InputState::new();
 
     let mut world = world::World::new(&graphics);
 
-    let mut timer = DeterminismTimer::at_interval(10);
+    let mut timer = TickTimer::at_interval(10);
     'main: loop {
         for event in graphics.poll_events() {
             match event {
                 jamkit::Event::Closed => break 'main,
                 jamkit::Event::KeyboardInput(state, key) =>
-                    input.process_keyboard(&state, &key),
+                    input.process_keyboard(state, key),
                 _ => ()
             }
         }

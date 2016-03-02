@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use cgmath::{Vector2, EuclideanVector};
+use cgmath::{Vector2, EuclideanVector, Vector};
 use jamkit;
 use jamkit::{Key};
 use jamkit::utils::{InputState};
-use num::traits::{Zero};
 
 pub struct Player {
     position: Vector2<f32>,
@@ -35,13 +34,13 @@ impl Player {
         let mut direction = Vector2::new(0.0, 0.0);
         let speed = Vector2::new(2.0, 2.0);
 
-        if input.get(Key::A).is_pressed() { direction.x -= 1.0; }
-        if input.get(Key::D).is_pressed() { direction.x += 1.0; }
-        if input.get(Key::W).is_pressed() { direction.y -= 1.0; }
-        if input.get(Key::S).is_pressed() { direction.y += 1.0; }
+        if input[Key::A].is_pressed() { direction.x -= 1.0; }
+        if input[Key::D].is_pressed() { direction.x += 1.0; }
+        if input[Key::W].is_pressed() { direction.y -= 1.0; }
+        if input[Key::S].is_pressed() { direction.y += 1.0; }
 
-        if !direction.is_zero() {
-            direction.normalize_self();
+        if direction != Vector2::zero() {
+            direction = direction.normalize();
         }
 
         self.position = self.position + (direction * speed);

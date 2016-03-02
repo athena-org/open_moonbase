@@ -5,7 +5,7 @@ authors = ["Layl Conway"]
 license = "Apache-2.0"
 
 [dependencies]
-cgmath = "0.2"
-jamkit = "0.2.4"
+cgmath = "0.7"
+jamkit = "0.3.1"
 num = "0.1.25"
 rand = "0.3.8"
